@@ -1,0 +1,201 @@
+<div class="container mt-5 mb-5 layout_limit">
+
+    <h1 class="title">{{ this.new_form ? 'Novo' : 'Editar' }} Cliente</h1>
+
+    <div class="p-3 bg-light border">
+
+        <form [formGroup]="form_cliente" (ngSubmit)="onSubmit()">
+
+            <h6 class="text-primary">Dados Pessoais</h6>
+
+            <hr>
+
+            <div class="mb-3" *ngIf="!this.new_form">
+                <label for="id" class="form-label">ID</label>
+                <input type="number" class="form-control" id="id" formControlName="id">
+            </div>
+            
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome do cliente</label>
+                <input type="text" class="form-control" id="nome" formControlName="nome" autocomplete="off" autofocus>
+                <small class="form-text text-danger" *ngIf="form_cliente.controls['nome'].errors && (form_cliente.controls['nome'].dirty || form_cliente.controls['nome'].touched)">
+                    {{
+                        form_cliente.controls['nome'].errors.hasOwnProperty('required') ? 'Informe o nome do cliente.' :
+                        form_cliente.controls['nome'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 255 caracteres.' :
+                        form_cliente.controls['nome'].errors.hasOwnProperty('pattern') ? 'Deve conter apenas letras.' : ''
+                    }}
+                </small>
+            </div>
+
+            <div class="mb-3 row">
+
+                <div class="col-sm">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="cpf" formControlName="cpf" mask="000.000.000-00" [showMaskTyped]="true" [dropSpecialCharacters]="true" autocomplete="off">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['cpf'].errors && (form_cliente.controls['cpf'].dirty || form_cliente.controls['cpf'].touched)">
+                        {{
+                            form_cliente.controls['cpf'].errors.hasOwnProperty('required') ? 'Informe o CPF do cliente.' :
+                            form_cliente.controls['cpf'].errors.hasOwnProperty('mask') ? 'CPF inválido.' : ''
+                        }}
+                    </small>
+                </div>
+
+                <div class="col-sm">
+                    <label for="telefone" class="form-label">Telefone</label>
+                    <input type="text" class="form-control" id="telefone" formControlName="telefone" mask="+00 (00) 0000-0000||+00 (00) 00000-0000" [showMaskTyped]="true" [dropSpecialCharacters]="true">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['telefone'].errors && (form_cliente.controls['telefone'].dirty || form_cliente.controls['telefone'].touched)">
+                        {{
+                            form_cliente.controls['telefone'].errors.hasOwnProperty('required') ? 'Informe o telefone do cliente.' :
+                            form_cliente.controls['telefone'].errors.hasOwnProperty('mask') ? 'Telefone Inválido.' : ''
+                        }}
+                    </small>
+                </div>
+
+            </div>
+
+            <h6 class="text-primary">Endereço</h6>
+
+            <hr>
+
+            <div class="mb-3">
+                <label for="cep" class="form-label">CEP</label>
+                <input type="text" class="form-control" id="cep" formControlName="cep" mask="00000-000" [showMaskTyped]="true" [dropSpecialCharacters]="true" (ngModelChange)="form_cliente.controls['cep'].dirty ? get_cep($event) : false">
+                <small class="form-text text-danger" *ngIf="form_cliente.controls['cep'].errors && (form_cliente.controls['cep'].dirty || form_cliente.controls['cep'].touched)">
+                    {{
+                        form_cliente.controls['cep'].errors.hasOwnProperty('required') ? 'Informe o CEP do cliente.' :
+                        form_cliente.controls['cep'].errors.hasOwnProperty('mask') ? 'CEP inválido.' :
+                        form_cliente.controls['cep'].errors.hasOwnProperty('invalid') ? 'CEP não encontrado.' : ''
+                    }}
+                </small>
+            </div>
+
+            <div class="mb-3 row">
+
+                <div class="col-sm-4">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select class="form-select" id="id_estado" formControlName="id_estado">
+                        <option selected hidden value="null">Selecione</option>
+                        <option *ngFor="let key of estados" [ngValue]="key.id">{{key.uf}}</option>
+                    </select>
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['id_estado'].errors && (form_cliente.controls['id_estado'].dirty || form_cliente.controls['id_estado'].touched)">
+                        {{
+                            form_cliente.controls['id_estado'].errors.hasOwnProperty('required') ? 'Informe o estado.' : ''
+                        }}
+                    </small>
+                </div>
+
+                <div class="col-sm">
+                    <label for="cidade" class="form-label">Cidade</label>
+                    <input type="text" class="form-control" id="cidade" formControlName="cidade">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['cidade'].errors && (form_cliente.controls['cidade'].dirty || form_cliente.controls['cidade'].touched)">
+                        {{
+                            form_cliente.controls['cidade'].errors.hasOwnProperty('required') ? 'Informe a cidade.' :
+                            form_cliente.controls['cidade'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 255 caracteres.' :
+                            form_cliente.controls['cidade'].errors.hasOwnProperty('pattern') ? 'Deve conter apenas letras.' : ''
+                        }}
+                    </small>
+                </div>
+
+            </div>
+            
+            <div class="mb-3 row">
+
+                <div class="col-sm">
+                    <label for="logradouro" class="form-label">Logradouro</label>
+                    <input type="text" class="form-control" id="logradouro" formControlName="logradouro">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['logradouro'].errors && (form_cliente.controls['logradouro'].dirty || form_cliente.controls['logradouro'].touched)">
+                        {{
+                            form_cliente.controls['logradouro'].errors.hasOwnProperty('required') ? 'Informe o logradouro.' :
+                            form_cliente.controls['logradouro'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 255 caracteres.' : ''
+                        }}
+                    </small>
+                </div>
+
+                <div class="col-sm">
+                    <label for="bairro" class="form-label">Bairro</label>
+                    <input type="text" class="form-control" id="bairro" formControlName="bairro">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['bairro'].errors && (form_cliente.controls['bairro'].dirty || form_cliente.controls['bairro'].touched)">
+                        {{
+                            form_cliente.controls['bairro'].errors.hasOwnProperty('required') ? 'Informe o bairro.' :
+                            form_cliente.controls['bairro'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 255 caracteres.' : ''
+                        }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="mb-3 row">
+
+                <div class="col-sm">
+                    <label for="numero" class="form-label">Número</label>
+                    <input type="text" class="form-control" id="numero" formControlName="numero" mask="99999999" autocomplete="off">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['numero'].errors && (form_cliente.controls['numero'].dirty || form_cliente.controls['numero'].touched)">
+                        {{
+                            form_cliente.controls['numero'].errors.hasOwnProperty('required') ? 'Informe o número.' :
+                            form_cliente.controls['numero'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 8 dígitos.' : ''
+                        }}
+                    </small>
+                </div>
+
+                <div class="col-sm">
+                    <label for="complemento" class="form-label">Complemento <span class="text-muted">(opcional)</span></label>
+                    <input type="text" class="form-control" id="complemento" formControlName="complemento" autocomplete="off">
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['complemento'].errors && (form_cliente.controls['complemento'].dirty || form_cliente.controls['complemento'].touched)">
+                        {{ form_cliente.controls['complemento'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 255 caracteres.' : '' }}
+                    </small>
+                </div>
+
+            </div>
+
+            <h6 class="text-primary">Encomendas</h6>
+
+            <hr>
+
+            <div class="mb-3 row">
+
+                <div class="col-sm">
+                    <label for="sabor" class="form-label">Sabor</label>
+                    <select class="form-select" id="id_sabor" formControlName="id_sabor">
+                        <option selected hidden value="null">Selecione</option>
+                        <option *ngFor="let key of sabores" [ngValue]="key.id">{{key.nome}}</option>
+                    </select>
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['id_sabor'].errors && (form_cliente.controls['id_sabor'].dirty || form_cliente.controls['id_sabor'].touched)">
+                        {{
+                            form_cliente.controls['id_sabor'].errors.hasOwnProperty('required') ? 'Informe o sabor.' : ''
+                        }}
+                    </small>
+                </div>
+
+                <div class="col-sm">
+                    <label for="entRet" class="form-label">Entrega ou Retirada</label>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="entRet1" [value]="'E'" formControlName="entRet">
+                        <label for="entRet1" class="form-check-label">Entrega</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="entRet2" [value]="'R'" formControlName="entRet">
+                        <label for="entRet2" class="form-check-label">Retirada</label>
+                    </div>
+                    <small class="form-text text-danger" *ngIf="form_cliente.controls['entRet'].errors && (form_cliente.controls['entRet'].dirty || form_cliente.controls['entRet'].touched)">
+                        {{ form_cliente.controls['entRet'].errors.hasOwnProperty('required') ? 'Informe se entrega ou retirada.' : '' }}
+                    </small>
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+                <label for="observacao" class="form-label">Observação <span class="text-muted">(opcional)</span></label>
+                <textarea class="form-control" id="observacao" rows="3" formControlName="observacao"></textarea>
+                <small class="form-text text-danger" *ngIf="form_cliente.controls['observacao'].errors && (form_cliente.controls['observacao'].dirty || form_cliente.controls['observacao'].touched)">
+                    {{ form_cliente.controls['observacao'].errors.hasOwnProperty('maxlength') ? 'Deve conter no máximo 255 caracteres.' : '' }}
+                </small>
+            </div>
+
+            <button type="button" class="btn btn-secondary me-4" routerLink="/cliente">Cancelar</button>
+            <button type="submit" class="col btn btn-primary" [disabled]="!form_cliente.valid">Enviar</button>
+
+        </form>
+
+    </div>
+
+</div>
